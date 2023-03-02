@@ -1,47 +1,47 @@
 import React, {useRef, useState} from 'react'
 import ListItem from './ListItem.jsx'
 
-function List() {
-  const [toDos, setToDos] = useState([ {key: '', task:'clean dishes' } ])
-  const myInput = useRef();
-  
-  const handleButtonClick = () => {
-    setToDos([...toDos, {task: myInput.current.value}])
+const List = ({ tasks, onAddToDo, onRemoveTask }) => {
+  const [enteredToDo, setEnteredToDo] = useState('a')
+  const [error,setError] = useState({});
+
+  const addToDoHandler = (event) =>{
+      event.preventDefault();
+      setError({})
+      if (enteredToDo.trim().length === 0) {
+          setError({
+              title: "Invalid Input",
+              message: "Please enter a valid name and age"
+          })
+      }
+      onAddToDo(enteredToDo);
+      setEnteredToDo('');
   }
-  
+
+    const toDoHandler = (event) => {
+    setEnteredToDo(event.target.value) 
+    }
+
   return (
     <div>
-    <input ref={myInput}></input>
+      <form onSubmit={addToDoHandler}>
+        <input type="text" onChange={toDoHandler} value={enteredToDo}></input>
+        <button type="submit"> Add a Task</button>
+      </form>
 
-    <button onClick={handleButtonClick}> Add a Task</button>
-    {console.log("toDos",toDos)}
+      {error && <div>
+        <h5>{error.title}</h5>
+        <p>{error.message}</p>
+        </div>}
 
-    {!toDos.length ? <h5>No tasks, add a task</h5> : (
-    toDos.map((listElement, index)=>(
-      <ListItem key={index} task={listElement.task}/>
-    ))
-    )} 
+      {!tasks.length ? <h5>No tasks, add a task</h5> : (
+        tasks.map(({ id, task })=>(
+          <ListItem key={id} id={id} task={task} onRemoveTask={onRemoveTask}/>
+        ))
+      )} 
     </div>
   )
 }
 
 export default List;
 
-
-
-// import React, { useState, useRef } from 'react'
-
-// export default function UnControlledInput() {
-//     const [myText,setMyText] = useState('');
-//     const myInput = useRef();
-//     console.log("uncontrolled: render")
-//   return (<>
-
-
-//         (<h1>Uncontrolled input</h1>)
-//         <input ref={myInput}></input>
-//         <button onClick={()=>{setMyText(myInput.current.value)}}></button>
-//         (<h2>{myText}</h2>)
-    
-//     </>)
-// }
